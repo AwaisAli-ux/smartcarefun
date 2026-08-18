@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 80">
+  <rect width="300" height="80" fill="none"/>
+  <!-- beIN text -->
+  <text x="10" y="62" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="68" fill="white" letter-spacing="-2">beIN</text>
+  <!-- SPORTS text smaller -->
+  <text x="220" y="62" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="30" fill="white" letter-spacing="1">SPORTS</text>
+</svg>
