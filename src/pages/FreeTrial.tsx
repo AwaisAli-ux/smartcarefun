@@ -43,6 +43,8 @@ const FreeTrial = () => {
         },
         body: JSON.stringify({
           _subject: `New 24H Free Trial Request from ${fullName}`,
+          _captcha: "false",
+          _template: "table",
           "Request Type": "FREE TRIAL REQUEST (24 Hours)",
           "Customer Name": fullName,
           "Phone / WhatsApp": phone,
