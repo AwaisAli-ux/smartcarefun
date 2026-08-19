@@ -34,7 +34,7 @@ const CheckoutModal = ({ isOpen, onClose, planName, planPrice, planPeriod }: Che
     const payload = {
       _subject: `⚡ [NEW ORDER] ${planName}`,
       _captcha: "false",
-      _replyto: email || "no-reply@smartcaretv.net",
+      _replyto: email || "no-reply@smartcaretv.com",
       "SELECTED PLAN": planName,
       "PLAN PRICE": planPrice,
       "BILLING PERIOD": planPeriod.replace("/", "PER "),
@@ -46,7 +46,7 @@ const CheckoutModal = ({ isOpen, onClose, planName, planPrice, planPeriod }: Che
     };
 
     try {
-      const response = await fetch("https://formsubmit.co/ajax/support@smartcaretv.net", {
+      const response = await fetch("https://formsubmit.co/ajax/support@smartcaretv.com", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

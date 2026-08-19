@@ -14,7 +14,7 @@ const WhatsAppIcon = ({ className }: { className?: string }) => (
 );
 
 const contactInfo = [
-  { icon: Mail, label: "Email", value: "support@smartcaretv.net", href: "mailto:support@smartcaretv.net" },
+  { icon: Mail, label: "Email", value: "support@smartcaretv.com", href: "mailto:support@smartcaretv.com" },
   { icon: WhatsAppIcon, label: "WhatsApp", value: "+1 (406) 479-2077", href: "https://wa.me/14064792077" },
   { icon: MessageCircle, label: "SMS Only", value: "+1 (406) 479-2077", href: "sms:+14064792077" },
   { icon: Clock, label: "Response Time", value: "Within 10 mins", href: "#" },

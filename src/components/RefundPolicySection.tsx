@@ -123,11 +123,11 @@ const RefundPolicySection = () => {
             </p>
             <div className="space-y-4 relative z-10">
               <a
-                href="mailto:support@smartcaretv.net"
+                href="mailto:support@smartcaretv.com"
                 className="flex flex-col p-4 rounded-2xl bg-black/40 border border-white/5 hover:border-primary/40 transition-all group/link"
               >
                 <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-1">Official Email</span>
-                <span className="text-sm font-bold text-foreground group-hover/link:text-primary transition-colors">support@smartcaretv.net</span>
+                <span className="text-sm font-bold text-foreground group-hover/link:text-primary transition-colors">support@smartcaretv.com</span>
               </a>
               <a
                 href="https://wa.me/14064792077"

@@ -29,7 +29,7 @@ const faqs = [
   },
   {
     q: "What if I need help?",
-    a: "Our 24/7 support team is always available to assist you via email at support@smartcaretv.net, SMS at +1 (406) 479-2077 or WhatsApp at +1 (406) 479-2077.",
+    a: "Our 24/7 support team is always available to assist you via email at support@smartcaretv.com, SMS at +1 (406) 479-2077 or WhatsApp at +1 (406) 479-2077.",
   },
   {
     q: "Is there a free trial?",
