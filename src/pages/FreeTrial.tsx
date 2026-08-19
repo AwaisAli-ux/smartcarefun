@@ -1,6 +1,6 @@
-import React, { useState, useRef } from "react";
+﻿import React, { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, User, Phone, Check, ChevronLeft } from "lucide-react";
 
 interface ConfettiPiece {
   id: number;
@@ -17,11 +17,16 @@ interface ConfettiPiece {
 const FreeTrial = () => {
   const navigate = useNavigate();
   const [isRevealed, setIsRevealed] = useState(false);
+  const [step, setStep] = useState<"phone" | "name">("phone");
   const [phone, setPhone] = useState("");
+  const [name, setName] = useState("");
+  const [phoneError, setPhoneError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [confetti, setConfetti] = useState<ConfettiPiece[]>([]);
+  
   const phoneInputRef = useRef<HTMLInputElement>(null);
+  const nameInputRef = useRef<HTMLInputElement>(null);
 
   const handleClaimClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     addRipple(e);
@@ -49,12 +54,12 @@ const FreeTrial = () => {
     const colors = ["#FFC85C", "#FF8FCF", "#6D5DF6", "#2CC9B4", "#FF9E4C"];
     const pieces: ConfettiPiece[] = [];
 
-    for (let i = 0; i < 34; i++) {
+    for (let i = 0; i < 36; i++) {
       const angle = Math.random() * 360;
       const distance = 110 + Math.random() * 160;
       const rad = (angle * Math.PI) / 180;
       const x = Math.cos(rad) * distance;
-      const y = Math.sin(rad) * distance + 40; // slight downward gravity bias
+      const y = Math.sin(rad) * distance + 40;
       const size = 5 + Math.random() * 6;
 
       pieces.push({
@@ -74,23 +79,35 @@ const FreeTrial = () => {
   };
 
   const formatPhoneNumber = (value: string) => {
-    const numbers = value.replace(/\D/g, "");
+    const numbers = value.replace(/\D/g, "").slice(0, 10);
     if (numbers.length <= 3) return numbers;
     if (numbers.length <= 6) return `(${numbers.slice(0, 3)}) ${numbers.slice(3)}`;
     return `(${numbers.slice(0, 3)}) ${numbers.slice(3, 6)}-${numbers.slice(6, 10)}`;
   };
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPhoneError("");
     setPhone(formatPhoneNumber(e.target.value));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handlePhoneNext = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!phone.trim() || phone.replace(/\D/g, "").length < 7) {
+    const rawDigits = phone.replace(/\D/g, "");
+    if (rawDigits.length !== 10) {
+      setPhoneError("Please enter a complete 10-digit phone number.");
       phoneInputRef.current?.focus();
       return;
     }
 
+    setPhoneError("");
+    setStep("name");
+    setTimeout(() => {
+      nameInputRef.current?.focus();
+    }, 200);
+  };
+
+  const handleFinalSubmit = async (customName?: string) => {
+    const submittedName = (typeof customName === "string" ? customName : name).trim();
     setIsSubmitting(true);
 
     try {
@@ -101,11 +118,12 @@ const FreeTrial = () => {
           Accept: "application/json",
         },
         body: JSON.stringify({
-          _subject: `⚡ New Free Trial Request from +1 ${phone}`,
+          _subject: `⚡ New Free Trial Request: ${submittedName || `+1 ${phone}`}`,
           _captcha: "false",
           _template: "table",
-          "Request Type": "FREE TRIAL UNLOCK (Premium)",
+          "Customer Name": submittedName || "Not Provided (Skipped)",
           "Phone / WhatsApp": `+1 ${phone}`,
+          "Request Type": "FREE TRIAL UNLOCK (24H Instant Access)",
           SubmittedAt: new Date().toLocaleString(),
         }),
       });
@@ -123,6 +141,8 @@ const FreeTrial = () => {
     setShowSuccess(false);
     navigate("/");
   };
+
+  const rawDigitsCount = phone.replace(/\D/g, "").length;
 
   return (
     <div className="free-trial-container">
@@ -217,7 +237,7 @@ const FreeTrial = () => {
           font-size: 13px;
           font-weight: 600;
           text-decoration: none;
-          padding: 8px 12px;
+          padding: 8px 14px;
           border-radius: 20px;
           background: rgba(255,255,255,0.06);
           border: 1px solid rgba(255,255,255,0.1);
@@ -255,15 +275,16 @@ const FreeTrial = () => {
           position: relative;
           z-index: 2;
           width: 100%;
+          max-width: 480px;
           text-align: center;
           background: rgba(255,255,255,0.06);
           border: 1px solid rgba(255,255,255,0.14);
-          backdrop-filter: blur(18px);
-          -webkit-backdrop-filter: blur(18px);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
           border-radius: 28px;
-          padding: 40px 26px 32px;
+          padding: 38px 26px 30px;
           box-shadow: 0 24px 60px rgba(0,0,0,0.35);
-          transition: filter 0.4s var(--smooth), transform 0.4s var(--smooth);
+          transition: filter 0.4s var(--smooth), transform 0.4s var(--smooth), max-height 0.4s var(--smooth);
           opacity: 0;
           animation: card-in 0.7s var(--spring) 0.15s forwards;
         }
@@ -277,7 +298,7 @@ const FreeTrial = () => {
           position: relative;
           width: 92px;
           height: 92px;
-          margin: 0 auto 22px;
+          margin: 0 auto 20px;
           transition: width 0.5s var(--spring), height 0.5s var(--spring), margin 0.5s var(--spring);
         }
 
@@ -322,18 +343,18 @@ const FreeTrial = () => {
           50%     { transform: translateY(-9px) rotate(3deg); }
         }
 
-        .card.revealed .hero-stage { width: 56px; height: 56px; margin-bottom: 16px; }
-        .card.revealed .hero-box { font-size: 26px; animation: none; transform: none; }
+        .card.revealed .hero-stage { width: 52px; height: 52px; margin-bottom: 14px; }
+        .card.revealed .hero-box { font-size: 24px; animation: none; transform: none; }
         .card.revealed .hero-glow { opacity: 0; }
 
         .title-text {
           font-family: 'Sora', sans-serif;
           font-weight: 700;
           color: #FFFFFF;
-          font-size: 25px;
+          font-size: 24px;
           line-height: 1.22;
           letter-spacing: -0.01em;
-          margin-bottom: 10px;
+          margin-bottom: 8px;
           opacity: 0;
           animation: text-in 0.6s var(--smooth) 0.5s forwards;
         }
@@ -354,10 +375,10 @@ const FreeTrial = () => {
 
         .sub {
           color: rgba(255,255,255,0.62);
-          font-size: 14.5px;
-          line-height: 1.55;
-          max-width: 300px;
-          margin: 0 auto 26px;
+          font-size: 14px;
+          line-height: 1.5;
+          max-width: 320px;
+          margin: 0 auto 24px;
           opacity: 0;
           animation: text-in 0.6s var(--smooth) 0.6s forwards;
         }
@@ -427,7 +448,7 @@ const FreeTrial = () => {
         }
 
         .card.revealed .reveal-form {
-          max-height: 220px;
+          max-height: 380px;
           opacity: 1;
           transform: translateY(0);
         }
@@ -440,12 +461,18 @@ const FreeTrial = () => {
           border-radius: 14px;
           padding: 4px;
           transition: border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+          position: relative;
         }
 
         .field:focus-within {
           border-color: var(--gold);
           background: rgba(255,255,255,0.1);
           box-shadow: 0 0 0 4px rgba(255,200,92,0.12);
+        }
+
+        .field.error {
+          border-color: #ff5555;
+          box-shadow: 0 0 0 4px rgba(255,85,85,0.15);
         }
 
         .cc {
@@ -457,20 +484,55 @@ const FreeTrial = () => {
           border-right: 1px solid rgba(255,255,255,0.16);
         }
 
-        .phone-input {
+        .field-icon {
+          padding: 14px 10px 14px 14px;
+          color: rgba(255,255,255,0.6);
+          border-right: 1px solid rgba(255,255,255,0.16);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .input-box {
           flex: 1;
           background: transparent;
           border: none;
           outline: none;
           color: #FFFFFF;
           font-family: 'Inter', sans-serif;
-          font-size: 16px;
+          font-size: 15.5px;
           font-weight: 500;
           padding: 14px 12px;
         }
 
-        .phone-input::placeholder {
+        .input-box::placeholder {
           color: rgba(255,255,255,0.32);
+        }
+
+        .digit-badge {
+          position: absolute;
+          right: 12px;
+          font-size: 11px;
+          font-weight: 700;
+          color: rgba(255,255,255,0.4);
+          background: rgba(0,0,0,0.25);
+          padding: 3px 8px;
+          border-radius: 8px;
+          pointer-events: none;
+        }
+
+        .digit-badge.complete {
+          color: #2CC9B4;
+          background: rgba(44,201,180,0.15);
+        }
+
+        .error-text {
+          font-size: 12px;
+          color: #ff7777;
+          text-align: left;
+          margin-top: 6px;
+          padding-left: 6px;
+          font-weight: 500;
         }
 
         .submit-btn {
@@ -502,6 +564,43 @@ const FreeTrial = () => {
         .submit-btn:disabled {
           opacity: 0.8;
           cursor: not-allowed;
+        }
+
+        .skip-btn {
+          background: transparent;
+          border: none;
+          color: rgba(255,255,255,0.55);
+          font-size: 13px;
+          font-weight: 600;
+          cursor: pointer;
+          margin-top: 10px;
+          padding: 6px 12px;
+          border-radius: 8px;
+          transition: all 0.2s ease;
+          display: inline-block;
+        }
+
+        .skip-btn:hover {
+          color: #FFFFFF;
+          background: rgba(255,255,255,0.06);
+        }
+
+        .step-back-btn {
+          background: transparent;
+          border: none;
+          color: rgba(255,255,255,0.5);
+          font-size: 12px;
+          font-weight: 600;
+          cursor: pointer;
+          margin-bottom: 12px;
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          transition: color 0.2s ease;
+        }
+
+        .step-back-btn:hover {
+          color: var(--gold);
         }
 
         .ripple {
@@ -718,50 +817,114 @@ const FreeTrial = () => {
         <div className={`card ${isRevealed ? "revealed" : ""} ${showSuccess ? "success-active" : ""}`}>
           <div className="hero-stage">
             <div className="hero-glow"></div>
-            <div className="hero-box">🎁</div>
+            <div className="hero-box">{step === "name" ? "👤" : "🎁"}</div>
           </div>
 
           <h1 className="title-text">
-            Congratulations!<br />You've unlocked a <span>Free Trial</span>
+            {step === "name" ? (
+              <>What's your <span>Name?</span></>
+            ) : (
+              <>Congratulations!<br />You've unlocked a <span>Free Trial</span></>
+            )}
           </h1>
-          <p className="sub">Tap below to claim instant access. No card required.</p>
+
+          <p className="sub">
+            {step === "name"
+              ? "Optional — helps us personalize your instant access."
+              : "Tap below to claim instant access. No card required."}
+          </p>
 
           <button className="claim-btn" onClick={handleClaimClick}>
             Claim Your Free Trial
           </button>
 
           <div className="reveal-form">
-            <form onSubmit={handleSubmit}>
-              <div className="field">
-                <span className="cc">+1</span>
-                <input
-                  ref={phoneInputRef}
-                  type="tel"
-                  inputMode="numeric"
-                  placeholder="(555) 000-0000"
-                  className="phone-input"
-                  value={phone}
-                  onChange={handlePhoneChange}
-                  required
-                />
+            {step === "phone" ? (
+              <form onSubmit={handlePhoneNext}>
+                <div className={`field ${phoneError ? "error" : ""}`}>
+                  <span className="cc">+1</span>
+                  <input
+                    ref={phoneInputRef}
+                    type="tel"
+                    inputMode="numeric"
+                    placeholder="(555) 000-0000"
+                    className="input-box"
+                    value={phone}
+                    onChange={handlePhoneChange}
+                    required
+                  />
+                  <span className={`digit-badge ${rawDigitsCount === 10 ? "complete" : ""}`}>
+                    {rawDigitsCount === 10 ? (
+                      <span className="flex items-center gap-1"><Check className="w-3 h-3 inline" /> 10 digits</span>
+                    ) : (
+                      `${rawDigitsCount}/10`
+                    )}
+                  </span>
+                </div>
+
+                {phoneError && <p className="error-text">{phoneError}</p>}
+
+                <button
+                  type="submit"
+                  className="submit-btn"
+                  onClick={(e) => addRipple(e)}
+                >
+                  Continue →
+                </button>
+                <p className="fine">By continuing you agree to receive one text message.</p>
+              </form>
+            ) : (
+              <div>
+                <button
+                  type="button"
+                  onClick={() => setStep("phone")}
+                  className="step-back-btn"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" /> Back to Phone ({phone})
+                </button>
+
+                <form onSubmit={(e) => { e.preventDefault(); handleFinalSubmit(); }}>
+                  <div className="field">
+                    <span className="field-icon">
+                      <User className="w-4 h-4" />
+                    </span>
+                    <input
+                      ref={nameInputRef}
+                      type="text"
+                      placeholder="Your Name (Optional)"
+                      className="input-box"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="submit-btn"
+                    disabled={isSubmitting}
+                    onClick={(e) => addRipple(e)}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>Activating Trial...</span>
+                      </>
+                    ) : (
+                      "Complete & Get Free Trial 🎉"
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    className="skip-btn"
+                    disabled={isSubmitting}
+                    onClick={() => handleFinalSubmit("Not Provided")}
+                  >
+                    Skip & Complete
+                  </button>
+                </form>
               </div>
-              <button
-                type="submit"
-                className="submit-btn"
-                disabled={isSubmitting}
-                onClick={(e) => addRipple(e)}
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>Processing...</span>
-                  </>
-                ) : (
-                  "Submit"
-                )}
-              </button>
-            </form>
-            <p className="fine">By continuing you agree to receive one text message.</p>
+            )}
           </div>
         </div>
 
@@ -794,7 +957,7 @@ const FreeTrial = () => {
               You're <span>In!</span>
             </h2>
             <p>
-              Your free trial is confirmed. We just texted your <strong>access link</strong> — check your messages.
+              Your free trial is confirmed. We just sent your <strong>access details</strong> — check your messages.
             </p>
             <button className="done-btn" onClick={handleDoneClick}>
               Awesome, thanks!

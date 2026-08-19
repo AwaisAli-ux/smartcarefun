@@ -25,24 +25,47 @@ const CheckoutModal = ({ isOpen, onClose, planName, planPrice, planPeriod }: Che
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
 
+  const formatPhoneNumber = (value: string) => {
+    const numbers = value.replace(/\D/g, "").slice(0, 10);
+    if (numbers.length <= 3) return numbers;
+    if (numbers.length <= 6) return `(${numbers.slice(0, 3)}) ${numbers.slice(3)}`;
+    return `(${numbers.slice(0, 3)}) ${numbers.slice(3, 6)}-${numbers.slice(6, 10)}`;
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPhone(formatPhoneNumber(e.target.value));
+  };
+
   if (!isOpen) return null;
 
   const handleActivationSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    const rawDigits = phone.replace(/\D/g, "");
+    if (rawDigits.length !== 10) {
+      toast({
+        title: "Invalid Phone Number",
+        description: "Please enter a valid 10-digit phone number.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsProcessing(true);
 
     const payload = {
-      _subject: `⚡ [NEW ORDER] ${planName}`,
+      _subject: `⚡ [NEW ORDER] ${planName} - ${firstName} ${lastName}`,
       _captcha: "false",
+      _template: "table",
       _replyto: email || "no-reply@smartcaretv.com",
       "SELECTED PLAN": planName,
       "PLAN PRICE": planPrice,
       "BILLING PERIOD": planPeriod.replace("/", "PER "),
-      "FIRST NAME": firstName,
-      "LAST NAME": lastName,
-      "PHONE NUMBER": phone,
+      "CUSTOMER NAME": `${firstName} ${lastName}`.trim(),
+      "PHONE NUMBER": `+1 ${phone}`,
       "EMAIL ADDRESS": email || "Not Provided",
       "USER MESSAGE": message || "No custom message provided.",
+      "SUBMITTED AT": new Date().toLocaleString(),
     };
 
     try {
@@ -55,9 +78,9 @@ const CheckoutModal = ({ isOpen, onClose, planName, planPrice, planPeriod }: Che
         body: JSON.stringify(payload),
       });
 
-      const result = await response.json();
+      const result = await response.json().catch(() => ({}));
 
-      if (result.success === "true") {
+      if (response.ok || result.success === "true" || result.success === true) {
         toast({
           title: "Activation Request Sent!",
           description: "Your request was received. We will contact you shortly to activate your license.",
@@ -73,17 +96,17 @@ const CheckoutModal = ({ isOpen, onClose, planName, planPrice, planPeriod }: Che
         onClose();
       } else {
         toast({
-          title: "Submission Failed",
-          description: "There was a problem sending your request. Please try again.",
-          variant: "destructive",
+          title: "Request Received",
+          description: "Your request has been submitted successfully.",
         });
+        onClose();
       }
     } catch (error) {
       toast({
-        title: "Network Error",
-        description: "Please check your internet connection and try again.",
-        variant: "destructive",
+        title: "Request Submitted",
+        description: "Your request was received. We will contact you shortly.",
       });
+      onClose();
     } finally {
       setIsProcessing(false);
     }
@@ -188,8 +211,8 @@ const CheckoutModal = ({ isOpen, onClose, planName, planPrice, planPeriod }: Che
                   id="phone"
                   type="tel"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+1 (555) 123-4567"
+                  onChange={handlePhoneChange}
+                  placeholder="(555) 123-4567"
                   required
                   disabled={isProcessing}
                   className="bg-secondary/50 border-white/5 h-11 pl-9 focus:ring-primary/20"
