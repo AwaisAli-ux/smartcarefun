@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Loader2 } from "lucide-react";
 
@@ -137,10 +137,14 @@ const FreeTrial = () => {
           --pink: #FF8FCF;
           --violet: #6D5DF6;
           --teal: #2CC9B4;
-          height: 100vh;
-          height: 100dvh;
+          min-height: 100vh;
+          min-height: 100dvh;
           width: 100%;
-          background: #0E0A24;
+          background:
+            radial-gradient(circle at 15% 10%, var(--violet) 0%, transparent 55%),
+            radial-gradient(circle at 88% 88%, var(--teal) 0%, transparent 50%),
+            radial-gradient(circle at 75% 20%, rgba(255,143,207,0.2) 0%, transparent 45%),
+            linear-gradient(160deg, #221B4D 0%, #150F33 60%, #0E0A24 100%);
           font-family: 'Inter', sans-serif;
           overflow: hidden;
           position: relative;
@@ -150,30 +154,26 @@ const FreeTrial = () => {
         }
 
         .screen {
-          height: 100vh;
-          height: 100dvh;
+          min-height: 100vh;
+          min-height: 100dvh;
           width: 100%;
-          max-width: 480px;
-          margin: 0 auto;
           position: relative;
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          padding: 26px;
-          background:
-            radial-gradient(circle at 20% 0%, var(--violet) 0%, transparent 55%),
-            radial-gradient(circle at 100% 100%, var(--teal) 0%, transparent 50%),
-            linear-gradient(160deg, #221B4D 0%, #150F33 60%, #0E0A24 100%);
+          padding: 26px 20px;
           overflow: hidden;
+          background: transparent;
         }
 
         .aurora {
           position: absolute;
-          inset: -20%;
-          background: radial-gradient(circle at 30% 30%, rgba(109,93,246,0.35), transparent 45%),
-                      radial-gradient(circle at 70% 70%, rgba(44,201,180,0.25), transparent 45%);
-          filter: blur(40px);
+          inset: -30%;
+          background: radial-gradient(circle at 25% 25%, rgba(109,93,246,0.4), transparent 50%),
+                      radial-gradient(circle at 75% 75%, rgba(44,201,180,0.3), transparent 50%),
+                      radial-gradient(circle at 80% 20%, rgba(255,143,207,0.2), transparent 45%);
+          filter: blur(60px);
           animation: drift 14s ease-in-out infinite alternate;
           z-index: 0;
           pointer-events: none;
@@ -191,11 +191,14 @@ const FreeTrial = () => {
           pointer-events: none;
           animation: float 6s var(--smooth) infinite;
         }
-        .dot:nth-child(2){ width:10px;height:10px; background:var(--gold); top:14%; left:16%; animation-delay:0s; }
-        .dot:nth-child(3){ width:7px; height:7px;  background:var(--teal); top:22%; right:14%; animation-delay:1.2s; }
-        .dot:nth-child(4){ width:5px; height:5px;  background:var(--pink); top:65%; left:10%; animation-delay:2s; }
-        .dot:nth-child(5){ width:9px; height:9px;  background:var(--violet); bottom:18%; right:12%; animation-delay:0.6s; }
-        .dot:nth-child(6){ width:6px; height:6px;  background:var(--gold); bottom:30%; left:22%; animation-delay:2.6s; }
+        .dot:nth-child(2){ width:12px; height:12px; background:var(--gold); top:14%; left:10%; animation-delay:0s; }
+        .dot:nth-child(3){ width:8px;  height:8px;  background:var(--teal); top:18%; right:12%; animation-delay:1.2s; }
+        .dot:nth-child(4){ width:6px;  height:6px;  background:var(--pink); top:65%; left:6%; animation-delay:2s; }
+        .dot:nth-child(5){ width:10px; height:10px; background:var(--violet); bottom:15%; right:8%; animation-delay:0.6s; }
+        .dot:nth-child(6){ width:7px;  height:7px;  background:var(--gold); bottom:25%; left:16%; animation-delay:2.6s; }
+        .dot:nth-child(7){ width:8px;  height:8px;  background:var(--teal); top:38%; left:24%; animation-delay:1.8s; }
+        .dot:nth-child(8){ width:6px;  height:6px;  background:var(--pink); top:48%; right:20%; animation-delay:0.9s; }
+        .dot:nth-child(9){ width:9px;  height:9px;  background:var(--gold); bottom:35%; right:26%; animation-delay:3.1s; }
 
         @keyframes float {
           0%,100% { transform: translateY(0) scale(1); opacity: 0.85; }
@@ -703,6 +706,9 @@ const FreeTrial = () => {
           SMART CARE <span>TV</span>
         </div>
 
+        <div className="dot"></div>
+        <div className="dot"></div>
+        <div className="dot"></div>
         <div className="dot"></div>
         <div className="dot"></div>
         <div className="dot"></div>
